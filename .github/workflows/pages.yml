@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - D-deliverables/**
+      - D-deliverables/index.html
       - .github/workflows/pages.yml
 
   workflow_dispatch:
@@ -35,15 +35,10 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Prepare Pages artifact
-        run: |
-          mkdir -p _site
-          cp D-deliverables/introducing-iasi.html _site/index.html
-
-      - name: Upload Pages artifact
+      - name: Upload deliverable
         uses: actions/upload-pages-artifact@v4
         with:
-          path: _site
+          path: D-deliverables
 
       - name: Deploy to GitHub Pages
         id: deployment
