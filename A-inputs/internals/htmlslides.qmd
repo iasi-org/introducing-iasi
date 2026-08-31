@@ -1,0 +1,74 @@
+---
+title: "Por qué HTMLSlides"
+description: "Justificación de la tecnología utilizada para materializar Introducing IASI."
+date: 2026-08-31
+references:
+  - EDR-20013
+---
+
+# Por qué HTMLSlides
+
+La presentación **Introducing IASI** se materializará inicialmente utilizando **HTMLSlides**.
+
+La selección de esta tecnología no forma parte del caso de negocio de la presentación. Es una decisión de ingeniería tomada después de definir la necesidad y evaluar distintas alternativas.
+
+La decisión formal, incluyendo contexto, alternativas, ventajas, inconvenientes y consecuencias, está registrada en:
+
+> **EDR-20013 — Usar HTMLSlides para materializar Introducing IASI**
+
+## Razón principal
+
+Introducing IASI necesita seguir siendo una **presentación**, con narrativa progresiva y control visual, pero también debe poder mantenerse como un artefacto textual, versionable, reproducible y accesible a agentes dentro del workspace.
+
+HTMLSlides proporciona suficiente infraestructura propia de una presentación sin obligar a IASI a adoptar una identidad visual, un modelo de autoría o un proceso de trabajo controlado por la herramienta.
+
+Permite mantener:
+
+- HTML como materialización natural;
+- una fuente textual e inspeccionable;
+- ejecución directa en navegador;
+- una presentación autocontenida con pocas dependencias;
+- control sobre HTML, CSS y comportamiento;
+- acceso directo por agentes para leer y modificar el artefacto.
+
+## Papel de HTMLSlides
+
+HTMLSlides se utilizará como **infraestructura de presentación y renderer**.
+
+No define:
+
+- la narrativa;
+- el contenido;
+- la identidad visual;
+- la tipografía;
+- la composición;
+- los diagramas;
+- el modelo conceptual de IASI.
+
+Esas decisiones pertenecen a IASI.
+
+Conceptualmente:
+
+```text
+IASI
+  ↓
+contenido + narrativa + lenguaje visual
+  ↓
+HTMLSlides
+  ↓
+presentación HTML
+```
+
+## Sustituibilidad
+
+HTMLSlides no forma parte del modelo conceptual de Introducing IASI.
+
+La presentación no debe diseñarse alrededor de limitaciones o convenciones específicas del renderer.
+
+Si las necesidades reales dejan de estar bien cubiertas por HTMLSlides, podrá sustituirse por otra tecnología sin cambiar el propósito, el contenido o la estructura conceptual de la presentación.
+
+## Referencia de decisión
+
+La justificación completa de esta selección se conserva en **EDR-20013**.
+
+Este documento únicamente hace explícita dentro de los inputs de `introducing-iasi` la tecnología seleccionada para la materialización y su papel dentro del proyecto.

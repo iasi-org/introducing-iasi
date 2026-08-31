@@ -1,0 +1,10 @@
+---
+title: "Corporate image"
+type: external
+---
+
+No existe una identidad visual predefinida que deba aplicarse a Introducing IASI.
+
+La presentación deberá definir una identidad visual propia, coherente con IASI y adecuada para una presentación técnica y profesional.
+
+La identidad visual no deberá quedar determinada por las convenciones o estilos predeterminados del renderer utilizado.

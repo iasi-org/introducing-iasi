@@ -1,0 +1,123 @@
+---
+title: "Caso de negocio — Introducing IASI"
+description: "Necesidad, objetivo y criterios de éxito de la presentación Introducing IASI."
+date: 2026-08-31
+---
+
+# Caso de negocio
+
+## Contexto
+
+IASI necesita una presentación de introducción que permita explicar de forma clara qué es **Ingeniería Asistida por Sistemas Inteligentes (IASI)**, por qué existe y qué problema intenta resolver.
+
+El ecosistema IASI ya contiene principios, metodología, decisiones de ingeniería, libros, artefactos, herramientas, infraestructura y memoria del proceso. Sin embargo, ese conocimiento está distribuido entre distintos repositorios y documentos y requiere tiempo para ser recorrido y comprendido.
+
+Se necesita una pieza de entrada capaz de ofrecer una visión coherente del conjunto sin exigir que la audiencia conozca previamente el proyecto.
+
+## Necesidad
+
+Disponer de una presentación breve, visual y narrativa que permita introducir IASI ante personas que todavía no conocen el proyecto.
+
+La presentación debe servir para:
+
+- explicar el cambio que provoca la incorporación real de Sistemas Inteligentes a la ingeniería de software;
+- presentar la necesidad que da origen a IASI;
+- mostrar los principios fundamentales de la propuesta;
+- explicar de forma comprensible cómo organiza IASI el proceso de ingeniería;
+- mostrar que IASI es un ecosistema real en construcción, no únicamente una idea conceptual;
+- despertar interés suficiente para que la audiencia quiera explorar posteriormente el proyecto.
+
+## Problema
+
+La información necesaria para comprender IASI existe, pero no está pensada como una narrativa de presentación.
+
+Utilizar directamente libros, documentación técnica, repositorios o páginas web produciría una entrada demasiado extensa y fragmentada.
+
+La presentación debe reducir esa complejidad sin trivializarla.
+
+Debe evitar dos extremos:
+
+- convertirse en documentación técnica proyectada en una pantalla;
+- convertirse en una pieza comercial que simplifique IASI hasta perder su fundamento de ingeniería.
+
+## Objetivo
+
+Crear **Introducing IASI**, una presentación capaz de explicar IASI de forma progresiva, visual y rigurosa.
+
+Al finalizar la presentación, una persona que no conociera previamente IASI debería poder responder, al menos, a estas preguntas:
+
+1.  ¿Qué problema está intentando resolver IASI?
+2.  ¿Qué cambia cuando los Sistemas Inteligentes se integran realmente en la ingeniería?
+3.  ¿Qué propone IASI frente a ese cambio?
+4.  ¿Cómo organiza IASI entradas, trabajo, decisiones y resultados?
+5.  ¿Qué papel mantienen las personas y qué papel ocupan los agentes?
+6.  ¿Qué existe ya dentro del ecosistema IASI?
+7.  ¿Dónde puede continuar explorándolo?
+
+## Audiencia
+
+La presentación debe poder utilizarse ante una audiencia técnica o profesional amplia, incluyendo:
+
+- ingenieros y arquitectos de software;
+- responsables técnicos y de ingeniería;
+- consultoras y organizaciones de desarrollo;
+- profesionales interesados en la incorporación de IA a procesos de ingeniería;
+- posibles colaboradores;
+- recruiters y responsables de talento con suficiente contexto técnico para valorar el proyecto.
+
+No debe asumir conocimiento previo de IASI.
+
+Sí puede asumir familiaridad general con el desarrollo de software y con el concepto actual de inteligencia artificial.
+
+## Resultado esperado
+
+El resultado será una presentación denominada **Introducing IASI**.
+
+La presentación deberá:
+
+- mantener una narrativa progresiva;
+- utilizar poco texto por slide;
+- apoyar las ideas mediante diagramas y composición visual;
+- conservar el rigor conceptual de IASI;
+- diferenciar claramente problema, propuesta y evidencia;
+- permitir explicar el contenido oralmente sin que las slides intenten sustituir al presentador;
+- mantener el lenguaje visual bajo control de IASI;
+- poder evolucionar como un artefacto versionable y reproducible.
+
+## Criterios de éxito
+
+La presentación se considerará adecuada cuando:
+
+- pueda entenderse sin haber leído previamente la documentación de IASI;
+- explique el propósito de IASI antes de presentar herramientas o implementación;
+- permita recorrer la historia completa sin saltos conceptuales importantes;
+- cada slide tenga una función narrativa identificable;
+- los diagramas expliquen relaciones reales del modelo IASI y no sean decoración;
+- el contenido pueda trazarse hasta conocimiento existente en los inputs del proyecto;
+- las decisiones visuales no dependan conceptualmente de una tecnología concreta de presentación;
+- la audiencia termine sabiendo dónde continuar explorando IASI.
+
+## Restricciones
+
+La presentación:
+
+- no debe convertirse en un catálogo de repositorios;
+- no debe intentar explicar toda la metodología IASI;
+- no debe introducir conceptos únicamente porque una herramienta de presentación permita mostrarlos;
+- no debe depender de servicios externos para poder ejecutarse;
+- no debe utilizar la herramienta de presentación como fuente de verdad del contenido;
+- no debe modificar ni reinterpretar silenciosamente materiales externos utilizados como referencia.
+
+## Fuera de alcance
+
+En esta primera presentación no se pretende:
+
+- documentar en detalle la arquitectura interna de IASI;
+- enseñar a instalar o utilizar sus herramientas;
+- describir exhaustivamente todos los repositorios;
+- sustituir los libros, guías o documentación técnica;
+- presentar un roadmap completo;
+- cubrir todos los casos de uso posibles de IASI;
+- demostrar todas las capacidades de los agentes o herramientas del ecosistema.
+
+La presentación es una **entrada al proyecto**, no el proyecto completo.

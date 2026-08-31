@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introducing IASI — Corporate Image v2</title>
+<style>
+:root {
+  --canvas:#F7F8FA;
+  --surface:#FFFFFF;
+  --ink:#111827;
+  --muted:#5B6472;
+  --primary:#1F4FD1;
+  --secondary:#0A6F78;
+  --emphasis:#B54708;
+  --line:#D7DDE8;
+  --soft:#E8EDF7;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:#E3E6EB;
+  font-family:"IBM Plex Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+}
+.deck { display:grid; gap:48px; padding:48px; justify-content:center; }
+.slide {
+  width:1600px; height:900px; background:var(--canvas);
+  padding:60px 80px; position:relative; overflow:hidden;
+}
+.eyebrow {
+  font-size:18px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--primary);
+}
+h1,h2,p { margin:0; }
+.cover { display:flex; flex-direction:column; justify-content:space-between; }
+.wordmark { font-size:28px; font-weight:700; letter-spacing:.12em; }
+.cover-main { max-width:1040px; padding-bottom:90px; }
+.cover h1 { font-size:80px; line-height:1.03; letter-spacing:-.035em; font-weight:700; }
+.cover .subtitle { margin-top:32px; font-size:32px; line-height:1.35; color:var(--muted); max-width:950px; }
+.rule { width:120px; height:8px; background:var(--primary); margin-bottom:36px; }
+.slide-title { font-size:52px; line-height:1.08; letter-spacing:-.025em; max-width:1100px; font-weight:700; }
+.concept { display:grid; grid-template-rows:auto 1fr auto; }
+.concept-main { display:grid; grid-template-columns:1.15fr .85fr; gap:96px; align-items:center; }
+.statement { font-size:56px; line-height:1.12; letter-spacing:-.025em; font-weight:600; max-width:850px; }
+.statement strong { color:var(--primary); font-weight:700; }
+.support { font-size:28px; line-height:1.45; color:var(--muted); margin-top:36px; max-width:790px; }
+.visual-note { border-left:5px solid var(--primary); padding:28px 0 28px 34px; }
+.visual-note .small { font-size:20px; color:var(--muted); margin-bottom:14px; }
+.visual-note .big { font-size:38px; line-height:1.25; font-weight:600; }
+.footer { display:flex; justify-content:space-between; align-items:center; font-size:18px; color:var(--muted); }
+.diagram { display:grid; grid-template-rows:auto 1fr auto; }
+.diagram-area { display:flex; align-items:center; justify-content:center; }
+.flow { display:grid; grid-template-columns:220px 90px 240px 90px 260px 90px 240px 90px 220px; align-items:center; }
+.node {
+  min-height:145px; display:flex; align-items:center; justify-content:center;
+  padding:26px; text-align:center; border:3px solid var(--ink);
+  border-radius:14px; font-size:27px; font-weight:600; background:var(--surface);
+}
+.node.outside { border-color:var(--muted); color:var(--muted); border-radius:999px; }
+.node.inputs { border-color:var(--primary); color:var(--primary); }
+.node.engine { background:var(--ink); color:white; }
+.node.outputs { border-color:var(--secondary); color:var(--secondary); }
+.arrow { position:relative; height:3px; background:var(--line); }
+.arrow:after {
+  content:""; position:absolute; right:-1px; top:50%; transform:translateY(-50%);
+  border-left:14px solid var(--muted); border-top:8px solid transparent; border-bottom:8px solid transparent;
+}
+.legend { text-align:center; font-size:23px; color:var(--muted); margin-top:-80px; }
+.legend strong { color:var(--ink); font-weight:600; }
+.code-note {
+  font-family:"IBM Plex Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+}
+@media (max-width:1700px) {
+  .slide { transform-origin:top center; transform:scale(.75); margin-bottom:-225px; }
+}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide cover">
+  <div class="wordmark">IASI</div>
+  <div class="cover-main">
+    <div class="rule"></div>
+    <div class="eyebrow">Engineering Assisted by Intelligent Systems</div>
+    <h1>Introducing IASI</h1>
+    <p class="subtitle">A way to rethink software engineering when intelligent systems become part of the real engineering process.</p>
+  </div>
+  <div class="footer"><span class="code-note">IASI</span><span>01</span></div>
+</section>
+
+<section class="slide concept">
+  <div>
+    <div class="eyebrow">Principle</div>
+    <h2 class="slide-title">Implementation is getting cheaper. Knowledge is becoming more valuable.</h2>
+  </div>
+  <div class="concept-main">
+    <div>
+      <p class="statement">The model can produce code. <strong>Engineering still has to decide what should exist.</strong></p>
+      <p class="support">IASI moves the center of gravity toward explicit knowledge, decisions, constraints, validation and traceability.</p>
+    </div>
+    <div class="visual-note">
+      <div class="small">The distinction</div>
+      <div class="big">Generating an answer is not the same thing as engineering a system.</div>
+    </div>
+  </div>
+  <div class="footer"><span>Introducing IASI</span><span>02</span></div>
+</section>
+
+<section class="slide diagram">
+  <div>
+    <div class="eyebrow">Core model</div>
+    <h2 class="slide-title">One entry. One exit. The cycles are internal.</h2>
+  </div>
+  <div class="diagram-area">
+    <div class="flow">
+      <div class="node outside">OUTSIDE</div><div class="arrow"></div>
+      <div class="node inputs">INPUTS</div><div class="arrow"></div>
+      <div class="node engine">ENGINE</div><div class="arrow"></div>
+      <div class="node outputs">OUTPUTS</div><div class="arrow"></div>
+      <div class="node outside">OUTSIDE</div>
+    </div>
+  </div>
+  <div class="legend"><strong>The project is finite outward</strong> and adaptive inward.</div>
+  <div class="footer"><span class="code-note">OUTSIDE → INPUTS → ENGINE → OUTPUTS → OUTSIDE</span><span>03</span></div>
+</section>
+
+</div>
+</body>
+</html>

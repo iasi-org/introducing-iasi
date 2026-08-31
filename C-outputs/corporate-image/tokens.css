@@ -1,0 +1,25 @@
+:root {
+  --iasi-canvas: #F7F8FA;
+  --iasi-surface: #FFFFFF;
+  --iasi-ink: #111827;
+  --iasi-muted: #5B6472;
+  --iasi-primary: #1F4FD1;
+  --iasi-secondary: #0A6F78;
+  --iasi-emphasis: #B54708;
+  --iasi-line: #D7DDE8;
+  --iasi-soft: #E8EDF7;
+
+  --iasi-font-sans: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --iasi-font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+
+  --iasi-radius: 14px;
+  --iasi-border: 2px;
+
+  --iasi-space-1: 8px;
+  --iasi-space-2: 16px;
+  --iasi-space-3: 24px;
+  --iasi-space-4: 32px;
+  --iasi-space-6: 48px;
+  --iasi-space-8: 64px;
+  --iasi-space-12: 96px;
+}
