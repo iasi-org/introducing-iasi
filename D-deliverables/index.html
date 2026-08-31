@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="html-slides v0.9.4">
+  <title>Introducing IASI</title>
+
+  <!-- === FONTS === -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===========================================
+       VIEWPORT FITTING: HTMLSlides mandatory base
+       =========================================== */
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: 100%;
+      overflow: hidden;
+      padding: var(--slide-padding);
+    }
+
+    :root {
+      --title-size: clamp(1.5rem, 5vw, 4rem);
+      --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+      --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+      --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+      --small-size: clamp(0.65rem, 1vw, 0.875rem);
+      --slide-padding: clamp(1rem, 4vw, 4rem);
+      --content-gap: clamp(0.5rem, 2vw, 2rem);
+      --element-gap: clamp(0.25rem, 1vw, 1rem);
+    }
+
+    .card, .container, .content-box {
+      max-width: min(90vw, 1000px);
+      max-height: min(80vh, 700px);
+    }
+
+    .feature-list, .bullet-list {
+      gap: clamp(0.4rem, 1vh, 1rem);
+    }
+
+    .feature-list li, .bullet-list li {
+      font-size: var(--body-size);
+      line-height: 1.4;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+      gap: clamp(0.5rem, 1.5vw, 1rem);
+    }
+
+    img, .image-container {
+      max-width: 100%;
+      max-height: min(50vh, 400px);
+      object-fit: contain;
+    }
+
+    @media (max-height: 700px) {
+      :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+      }
+    }
+
+    @media (max-height: 600px) {
+      :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+      }
+      .nav-dots, .keyboard-hint, .decorative { display: none; }
+    }
+
+    @media (max-height: 500px) {
+      :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+      }
+    }
+
+    @media (max-width: 600px) {
+      :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+      }
+      html { scroll-behavior: auto; }
+    }
+
+    /* ===========================================
+       IASI visual tokens
+       =========================================== */
+    :root {
+      --ink: #f2f5f2;
+      --muted: #a8b5ae;
+      --acid: #c8ff3d;
+      --cyan: #5ee7d0;
+      --void: #07100e;
+      --light-bg: #07100e;
+      --light-ink: #f2f5f2;
+      --light-muted: #a8b5ae;
+      --light-accent: #c8ff3d;
+      --light-note: #5ee7d0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      background: var(--void);
+    }
+
+    /* ===========================================
+       Shared reveal behavior
+       =========================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(clamp(.4rem, 1.5vw, 1.25rem));
+      transition: opacity .65s cubic-bezier(.16,1,.3,1),
+                  transform .65s cubic-bezier(.16,1,.3,1);
+    }
+
+    .slide.active .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal:nth-child(1) { transition-delay: .08s; }
+    .reveal:nth-child(2) { transition-delay: .16s; }
+    .reveal:nth-child(3) { transition-delay: .24s; }
+    .reveal:nth-child(4) { transition-delay: .32s; }
+
+    /* ===========================================
+       Slide 1: Cover
+       =========================================== */
+    .cover-slide {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 78% 20%, rgba(94,231,208,.16), transparent 32%),
+        radial-gradient(circle at 14% 84%, rgba(200,255,61,.10), transparent 28%),
+        var(--void);
+    }
+
+    .cover-slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: .17;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: clamp(2rem, 5vw, 4rem) clamp(2rem, 5vw, 4rem);
+      mask-image: linear-gradient(135deg, black, transparent 75%);
+    }
+
+    .cover-slide .slide-content {
+      position: relative;
+      z-index: 1;
+      align-items: flex-start;
+      padding-left: clamp(2rem, 10vw, 10rem);
+      padding-right: clamp(2rem, 9vw, 9rem);
+    }
+
+    .cover-title {
+      margin: 0;
+      max-width: 8ch;
+      font-size: clamp(3.2rem, 11vw, 10rem);
+      line-height: .9;
+      letter-spacing: -.07em;
+      font-weight: 800;
+    }
+
+    .cover-subtitle {
+      margin: var(--content-gap) 0 0;
+      font-size: clamp(1rem, 2.2vw, 1.8rem);
+      color: var(--muted);
+      letter-spacing: .01em;
+    }
+
+    .cover-epigraph {
+      position: absolute;
+      z-index: 2;
+      left: var(--slide-padding);
+      right: var(--slide-padding);
+      bottom: clamp(1rem, 2.5vw, 2rem);
+      margin: 0;
+      white-space: nowrap;
+      text-align: center;
+      font-size: clamp(.82rem, 1.15vw, 1.02rem);
+      line-height: 1.4;
+      font-style: italic;
+      color: #83c8bd;
+      letter-spacing: .01em;
+    }
+
+    .start-button {
+      position: absolute;
+      z-index: 3;
+      right: clamp(2rem, 9vw, 9rem);
+      bottom: clamp(4rem, 10vw, 8rem);
+      width: clamp(7rem, 14vw, 11.5rem);
+      aspect-ratio: 1;
+      border: 1px solid rgba(200,255,61,.62);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      color: var(--acid);
+      background: rgba(7,16,14,.18);
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(.7rem, 1vw, .95rem);
+      font-weight: 500;
+      letter-spacing: .16em;
+      cursor: pointer;
+      appearance: none;
+      animation: pulse 3.2s ease-in-out infinite;
+    }
+
+    .start-icon {
+      display: grid;
+      place-items: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: var(--acid);
+      color: var(--void);
+      font-size: 1.25rem;
+      line-height: 1;
+      box-shadow: 0 0 2rem rgba(200,255,61,.58);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .start-button:hover,
+    .start-button:focus-visible {
+      border-color: var(--acid);
+      outline: none;
+    }
+
+    .start-button:hover .start-icon,
+    .start-button:focus-visible .start-icon {
+      transform: translateX(.38rem);
+      box-shadow: 0 0 2.6rem rgba(200,255,61,.78);
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: .78; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+
+    /* ===========================================
+       Slide 2: Text draft
+       =========================================== */
+    .text-slide {
+      color: var(--light-ink);
+      background: var(--void);
+      box-shadow: inset 0 0 0 100vmax var(--void);
+      clip-path: inset(0);
+    }
+
+    .text-slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: .035;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(94,231,208,.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(94,231,208,.12) 1px, transparent 1px);
+      background-size: clamp(2rem, 5vw, 4rem) clamp(2rem, 5vw, 4rem);
+      mask-image: linear-gradient(135deg, black, transparent 78%);
+    }
+
+    .text-slide .slide-content {
+      position: relative;
+      z-index: 1;
+      align-items: flex-start;
+      padding-left: clamp(2rem, 10vw, 10rem);
+      padding-right: clamp(2rem, 12vw, 12rem);
+      padding-bottom: clamp(5rem, 10vh, 7rem);
+    }
+
+    .text-kicker {
+      margin: 0 0 clamp(1rem, 2vw, 1.5rem);
+      font-family: 'DM Mono', monospace;
+      font-size: var(--small-size);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--light-accent);
+    }
+
+    .text-title {
+      margin: 0;
+      max-width: 18ch;
+      font-size: clamp(2.5rem, 6vw, 5.6rem);
+      line-height: 1.02;
+      letter-spacing: -.045em;
+      font-weight: 700;
+    }
+
+    .text-body {
+      margin-top: clamp(2rem, 4vw, 3.5rem);
+      max-width: 58rem;
+      display: grid;
+      gap: clamp(1rem, 1.6vw, 1.5rem);
+      color: var(--light-muted);
+      font-size: clamp(1rem, 1.7vw, 1.45rem);
+      line-height: 1.55;
+      font-weight: 400;
+    }
+
+    .text-body p { margin: 0; }
+
+    .text-body strong {
+      color: var(--light-ink);
+      font-weight: 600;
+    }
+
+    .text-epigraph {
+      position: absolute;
+      z-index: 2;
+      left: var(--slide-padding);
+      right: var(--slide-padding);
+      bottom: clamp(1rem, 2.5vw, 2rem);
+      margin: 0;
+      white-space: nowrap;
+      text-align: center;
+      font-size: clamp(.82rem, 1.15vw, 1.02rem);
+      line-height: 1.4;
+      font-style: italic;
+      color: var(--light-note);
+      letter-spacing: .01em;
+    }
+
+
+
+    /* ===========================================
+       Slide 3: IASI boundary
+       =========================================== */
+    .flow-slide {
+      background: var(--void);
+      color: var(--ink);
+    }
+
+    .flow-slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 22%, rgba(94,231,208,.07), transparent 24%),
+        radial-gradient(circle at 82% 74%, rgba(200,255,61,.05), transparent 25%);
+      pointer-events: none;
+    }
+
+    .flow-wrap {
+      width: min(90vw, 1400px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(2rem, 5vh, 4.5rem);
+      position: relative;
+      z-index: 1;
+    }
+
+    .flow-title {
+      font-size: clamp(2rem, 4vw, 4.6rem);
+      line-height: .98;
+      letter-spacing: -.045em;
+      font-weight: 800;
+    }
+
+    .flow-subtitle {
+      margin-top: .7rem;
+      color: var(--muted);
+      font-size: clamp(.9rem, 1.3vw, 1.15rem);
+      max-width: 54rem;
+      line-height: 1.5;
+    }
+
+    .iasi-flow {
+      display: grid;
+      grid-template-columns: minmax(7rem, .8fr) auto minmax(0, 4.4fr) auto minmax(7rem, .8fr);
+      align-items: center;
+      gap: clamp(.65rem, 1.4vw, 1.5rem);
+    }
+
+    .outside {
+      min-height: clamp(7rem, 16vh, 10rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      color: var(--cyan);
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(.72rem, .95vw, .9rem);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .cloud-icon {
+      display: block;
+      width: clamp(6rem, 8.5vw, 8.5rem);
+      height: clamp(4rem, 6vw, 6rem);
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+
+    .outside.interactive {
+      cursor: pointer;
+      border-radius: 1rem;
+      transition: background .2s ease, transform .2s ease;
+      outline: none;
+    }
+
+    .outside.interactive:hover,
+    .outside.interactive:focus-visible {
+      background: rgba(94,231,208,.055);
+      transform: translateY(-2px);
+    }
+
+    .outside.interactive::after {
+      content: 'click';
+      font-size: clamp(.55rem, .7vw, .66rem);
+      letter-spacing: .12em;
+      color: rgba(168,181,174,.62);
+      text-transform: uppercase;
+      margin-top: -.15rem;
+    }
+
+    .input-detail-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: var(--slide-padding);
+      background: transparent;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .18s ease, visibility 0s linear .18s;
+    }
+
+    .input-detail-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition-delay: 0s;
+    }
+
+    .input-detail {
+      position: relative;
+      width: min(78vw, 1040px);
+      padding: clamp(1.8rem, 3vw, 3rem);
+      border: 1px solid rgba(17,24,39,.12);
+      border-radius: 1.35rem;
+      background: #ffffff;
+      color: #111827;
+      box-shadow: 0 1.6rem 5rem rgba(0,0,0,.32);
+      transform: translateY(16px) scale(.99);
+      transition: transform .24s cubic-bezier(.16,1,.3,1);
+    }
+
+    .input-detail-backdrop.open .input-detail {
+      transform: translateY(0) scale(1);
+    }
+
+    .input-detail-kicker {
+      font-family: 'DM Mono', monospace;
+      color: #0a6f78;
+      font-size: clamp(.66rem, .85vw, .8rem);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-bottom: .8rem;
+    }
+
+    .input-detail h3 {
+      color: #111827;
+      font-size: clamp(1.65rem, 3vw, 3rem);
+      line-height: 1;
+      letter-spacing: -.035em;
+      margin-bottom: 1rem;
+    }
+
+    .input-detail-copy {
+      max-width: 54rem;
+      color: #4b5563;
+      font-size: clamp(.92rem, 1.28vw, 1.12rem);
+      line-height: 1.55;
+    }
+
+    .input-detail-copy strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .input-icons {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: clamp(1.3rem, 2.8vw, 2.7rem);
+      margin-top: clamp(1.8rem, 3vw, 2.8rem);
+      padding: .5rem 0 .15rem;
+    }
+
+    .source-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .55rem;
+      min-width: 4.4rem;
+    }
+
+    .source-icon svg {
+      display: block;
+      width: clamp(2.9rem, 4.8vw, 4.7rem);
+      height: clamp(2.9rem, 4.8vw, 4.7rem);
+      overflow: visible;
+    }
+
+    .source-icon small {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(.52rem, .65vw, .62rem);
+      letter-spacing: .06em;
+      color: #6b7280;
+      text-transform: uppercase;
+    }
+
+    .detail-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.4rem;
+      height: 2.4rem;
+      border: 1px solid rgba(17,24,39,.14);
+      border-radius: 50%;
+      background: #ffffff;
+      color: #6b7280;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: color .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .detail-close:hover,
+    .detail-close:focus-visible {
+      color: #111827;
+      border-color: rgba(10,111,120,.45);
+      background: #f3f7f6;
+      outline: none;
+    }
+
+
+    .interactive-inputs {
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      outline: none;
+    }
+
+    .interactive-inputs:hover,
+    .interactive-inputs:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(94,231,208,.5);
+      background: rgba(94,231,208,.045);
+    }
+
+    .folders-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1rem, 2vw, 1.6rem);
+      margin-top: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .folder-card {
+      min-height: 11rem;
+      padding: 1.2rem 1rem 1.1rem;
+      border: 1px solid rgba(17,24,39,.12);
+      border-radius: 1rem;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: .8rem;
+    }
+
+    .folder-icon {
+      width: clamp(3.8rem, 5.5vw, 5.4rem);
+      height: auto;
+      flex: 0 0 auto;
+    }
+
+    .folder-card h4 {
+      color: #111827;
+      font-size: clamp(1rem, 1.45vw, 1.35rem);
+      line-height: 1;
+      margin: 0;
+      letter-spacing: -.02em;
+    }
+
+    .folder-card p {
+      color: #5b6472;
+      font-size: clamp(.76rem, .95vw, .9rem);
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .folder-card.external .folder-tab,
+    .folder-card.external .folder-body { fill: #5ee7d0; }
+
+    .folder-card.internal .folder-tab,
+    .folder-card.internal .folder-body { fill: #c8ff3d; }
+
+    .folder-card.authored .folder-tab,
+    .folder-card.authored .folder-body { fill: #f59e0b; }
+
+
+    .interactive-engine {
+      cursor: pointer;
+      outline: none;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .interactive-engine:hover,
+    .interactive-engine:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--acid);
+      background: rgba(200,255,61,.075);
+    }
+
+    .engine-steps {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: clamp(.45rem, 1vw, .9rem);
+      margin-top: clamp(1.8rem, 3vw, 2.7rem);
+    }
+
+    .engine-step {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .65rem;
+      text-align: center;
+    }
+
+    .engine-step-icon {
+      width: clamp(4rem, 6vw, 5.8rem);
+      height: clamp(4rem, 6vw, 5.8rem);
+      border-radius: 1.15rem;
+      display: grid;
+      place-items: center;
+      background: #f8fafc;
+      border: 1px solid rgba(17,24,39,.1);
+    }
+
+    .engine-step-icon svg {
+      width: 56%;
+      height: 56%;
+      stroke: #0a6f78;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .engine-step:nth-of-type(3) .engine-step-icon svg,
+    .engine-step:nth-of-type(7) .engine-step-icon svg {
+      stroke: #b54708;
+    }
+
+    .engine-step:nth-of-type(5) .engine-step-icon svg {
+      stroke: #1f4fd1;
+    }
+
+    .engine-step:nth-of-type(9) .engine-step-icon svg {
+      stroke: #15803d;
+    }
+
+    .engine-step:nth-of-type(11) .engine-step-icon svg {
+      stroke: #7c3aed;
+    }
+
+    .engine-step strong {
+      color: #111827;
+      font-size: clamp(.86rem, 1.08vw, 1rem);
+      letter-spacing: -.01em;
+    }
+
+    .engine-arrow {
+      color: #9ca3af;
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(1.1rem, 1.6vw, 1.55rem);
+      text-align: center;
+    }
+
+    .engine-caption {
+      margin-top: clamp(1.4rem, 2.4vw, 2rem);
+      color: #6b7280;
+      font-size: clamp(.78rem, .98vw, .92rem);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+
+    .interactive-outputs {
+      cursor: pointer;
+      outline: none;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .interactive-outputs:hover,
+    .interactive-outputs:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(124,58,237,.52);
+      background: rgba(124,58,237,.05);
+    }
+
+    .outputs-pipeline {
+      display: grid;
+      grid-template-columns: 1.15fr auto .9fr auto 1.05fr auto 1.2fr;
+      align-items: center;
+      gap: clamp(.55rem, 1.2vw, 1rem);
+      margin-top: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .output-stage {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .7rem;
+      text-align: center;
+    }
+
+    .output-stage-icon {
+      width: clamp(4.4rem, 6.2vw, 6rem);
+      height: clamp(4.4rem, 6.2vw, 6rem);
+      display: grid;
+      place-items: center;
+      border-radius: 1.15rem;
+      background: #f8fafc;
+      border: 1px solid rgba(17,24,39,.1);
+    }
+
+    .output-stage-icon svg {
+      width: 58%;
+      height: 58%;
+      fill: none;
+      stroke: #0a6f78;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .output-stage.verify .output-stage-icon svg {
+      stroke: #15803d;
+    }
+
+    .output-stage.authorize .output-stage-icon svg {
+      stroke: #7c3aed;
+    }
+
+    .output-stage.deliverable .output-stage-icon svg {
+      stroke: #b54708;
+    }
+
+    .output-stage strong {
+      color: #111827;
+      font-size: clamp(.9rem, 1.1vw, 1.02rem);
+    }
+
+    .output-stage span {
+      color: #6b7280;
+      font-size: clamp(.66rem, .78vw, .75rem);
+      line-height: 1.35;
+    }
+
+    .output-arrow {
+      color: #9ca3af;
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(1.1rem, 1.7vw, 1.5rem);
+      text-align: center;
+    }
+
+    .authorization-modes {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-top: -.1rem;
+    }
+
+    .authorization-mode {
+      padding: .22rem .48rem;
+      border-radius: 999px;
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(.5rem, .62vw, .58rem);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: #6b21a8;
+      background: #f3e8ff;
+      border: 1px solid #e9d5ff;
+    }
+
+    .outputs-rule {
+      margin-top: clamp(1.5rem, 2.5vw, 2rem);
+      padding-top: 1.15rem;
+      border-top: 1px solid rgba(17,24,39,.1);
+      color: #374151;
+      font-size: clamp(.82rem, 1vw, .94rem);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .outputs-rule strong {
+      color: #111827;
+    }
+
+
+    .delivery-outside::after {
+      content: 'click';
+      font-size: clamp(.55rem, .7vw, .66rem);
+      letter-spacing: .12em;
+      color: rgba(168,181,174,.62);
+      text-transform: uppercase;
+      margin-top: -.15rem;
+    }
+
+    .delivery-targets {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: clamp(.7rem, 1.4vw, 1.15rem);
+      margin-top: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .delivery-target {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .7rem;
+      text-align: center;
+    }
+
+    .delivery-target-icon {
+      width: clamp(4.2rem, 6vw, 5.8rem);
+      height: clamp(4.2rem, 6vw, 5.8rem);
+      display: grid;
+      place-items: center;
+      border-radius: 1.1rem;
+      background: #f8fafc;
+      border: 1px solid rgba(17,24,39,.1);
+    }
+
+    .delivery-target-icon svg {
+      width: 57%;
+      height: 57%;
+      fill: none;
+      stroke: #0a6f78;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .delivery-target:nth-child(2) .delivery-target-icon svg { stroke: #7c3aed; }
+    .delivery-target:nth-child(3) .delivery-target-icon svg { stroke: #15803d; }
+    .delivery-target:nth-child(4) .delivery-target-icon svg { stroke: #b54708; }
+    .delivery-target:nth-child(5) .delivery-target-icon svg { stroke: #1f4fd1; }
+    .delivery-target:nth-child(6) .delivery-target-icon svg { stroke: #c2410c; }
+
+    .delivery-target strong {
+      color: #111827;
+      font-size: clamp(.8rem, .96vw, .9rem);
+      line-height: 1.15;
+    }
+
+    .delivery-target span {
+      color: #6b7280;
+      font-size: clamp(.62rem, .72vw, .68rem);
+      line-height: 1.3;
+    }
+
+    .delivery-rule {
+      margin-top: clamp(1.5rem, 2.4vw, 2rem);
+      padding-top: 1.1rem;
+      border-top: 1px solid rgba(17,24,39,.1);
+      text-align: center;
+      color: #374151;
+      font-size: clamp(.82rem, 1vw, .94rem);
+    }
+
+    .delivery-rule strong {
+      color: #111827;
+    }
+
+    .iasi-boundary {
+      position: relative;
+      border: 1px solid rgba(200,255,61,.48);
+      border-radius: 1.6rem;
+      padding: clamp(2rem, 4vw, 3rem) clamp(1rem, 2vw, 1.6rem) clamp(1.2rem, 2.3vw, 1.8rem);
+      background: rgba(200,255,61,.018);
+      box-shadow: inset 0 0 0 1px rgba(200,255,61,.025);
+    }
+
+    .iasi-boundary-label {
+      position: absolute;
+      top: 0;
+      left: clamp(1.2rem, 2vw, 2rem);
+      transform: translateY(-50%);
+      padding: .15rem .65rem;
+      background: var(--void);
+      color: var(--acid);
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(.7rem, .9vw, .88rem);
+      letter-spacing: .18em;
+      font-weight: 500;
+    }
+
+    .iasi-inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: clamp(.6rem, 1.2vw, 1.2rem);
+    }
+
+    .flow-box {
+      min-height: clamp(7rem, 16vh, 10rem);
+      padding: clamp(1rem, 1.7vw, 1.5rem);
+      border: 1px solid rgba(242,245,242,.18);
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: .6rem;
+      background: rgba(242,245,242,.025);
+    }
+
+    .flow-box strong {
+      font-size: clamp(1.05rem, 1.7vw, 1.55rem);
+      letter-spacing: -.02em;
+    }
+
+    .flow-box span {
+      color: var(--muted);
+      font-size: clamp(.72rem, .95vw, .9rem);
+      line-height: 1.45;
+    }
+
+    .flow-box.engine {
+      border-color: rgba(200,255,61,.48);
+      background: rgba(200,255,61,.045);
+    }
+
+    .flow-box.engine strong {
+      color: var(--acid);
+    }
+
+    .flow-arrow {
+      color: rgba(242,245,242,.52);
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(1.2rem, 2vw, 2rem);
+      text-align: center;
+      transition: transform .22s ease, color .22s ease;
+    }
+
+    .flow-slide.active .flow-arrow {
+      animation: arrowBreath 2.6s ease-in-out infinite;
+    }
+
+    .flow-note {
+      position: absolute;
+      left: var(--slide-padding);
+      right: var(--slide-padding);
+      bottom: clamp(1.2rem, 2.2vw, 2rem);
+      color: var(--cyan);
+      font-size: clamp(.78rem, 1.05vw, .95rem);
+      font-style: italic;
+      text-align: center;
+      letter-spacing: .01em;
+    }
+
+    @keyframes arrowBreath {
+      0%, 100% { transform: translateX(0); color: rgba(242,245,242,.42); }
+      50% { transform: translateX(.18rem); color: rgba(200,255,61,.86); }
+    }
+
+    /* ===========================================
+       IASI SINGLE-FRAME MODE
+       HTMLSlides structure, one visible slide at a time.
+       =========================================== */
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden !important;
+    }
+
+    html {
+      scroll-snap-type: none !important;
+      scroll-behavior: auto !important;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .deck > .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateX(2.5%);
+      transition:
+        opacity .38s cubic-bezier(.16,1,.3,1),
+        transform .38s cubic-bezier(.16,1,.3,1),
+        visibility 0s linear .38s;
+    }
+
+    .deck > .slide.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(0);
+      transition-delay: 0s;
+    }
+
+    /* ===========================================
+       Navigation dots
+       =========================================== */
+    .slide-nav {
+      position: fixed;
+      z-index: 20;
+      right: clamp(.8rem, 1.5vw, 1.4rem);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+    }
+
+    .slide-nav-dot {
+      width: .55rem;
+      height: .55rem;
+      border-radius: 50%;
+      border: 1px solid rgba(128,128,128,.6);
+      background: rgba(128,128,128,.18);
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .slide-nav-dot.active {
+      transform: scale(1.35);
+      background: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    @media (max-width: 900px) {
+      .cover-epigraph,
+      .text-epigraph { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+  <!-- === HTMLSlides chrome === -->
+  <div class="slide-nav nav-dots" id="slideNav" aria-label="Slide navigation"></div>
+
+  <!-- === HTMLSlides deck === -->
+  <div class="deck" id="deck">
+
+    <!-- Slide 0 -->
+    <div class="slide active cover-slide" data-slide="0">
+      <div class="slide-content">
+        <h1 class="cover-title reveal">Introducing IASI</h1>
+        <p class="cover-subtitle reveal">Intelligent Assisted Software Engineering</p>
+      </div>
+
+      <button class="start-button" id="startButton" type="button" aria-label="Start presentation">
+        <span class="start-label">START</span>
+        <span class="start-icon" aria-hidden="true">→</span>
+      </button>
+
+      <p class="cover-epigraph reveal">Because when implementation costs less and less, knowledge becomes more and more valuable.</p>
+
+      <script type="application/json" class="slide-notes">
+        {"title":"Introducing IASI","script":"IASI starts from a simple observation: as implementation becomes cheaper, the engineering knowledge that tells us what to build, why, and how to validate it becomes more valuable.","notes":["IASI is Engineering Assisted by Intelligent Systems","Implementation cost is falling","Knowledge and engineering judgment become more valuable"]}
+      </script>
+    </div>
+
+    <!-- Slide 1 -->
+    <div class="slide text-slide" data-slide="1">
+      <div class="slide-content">
+        <p class="text-kicker reveal">What is IASI?</p>
+        <h2 class="text-title reveal">Engineering for a world where intelligent systems are part of the process.</h2>
+        <div class="text-body reveal">
+          <p><strong>IASI is an open initiative</strong> exploring how software engineering changes when intelligent systems stop being occasional tools and become a real and natural part of engineering work.</p>
+          <p>It is not about replacing engineering. It is about rethinking how we define problems, preserve knowledge, make decisions, execute work and verify results.</p>
+        </div>
+      </div>
+
+      <p class="text-epigraph reveal">The question is no longer how to add AI to the old process, but what engineering process this new reality requires.</p>
+
+      <script type="application/json" class="slide-notes">
+        {"title":"What is IASI?","script":"IASI is not another AI tool. It is an open initiative asking how software engineering itself has to change when intelligent systems become a real and natural part of the work.","notes":["IASI is an engineering initiative","Intelligent systems become part of the process","The process itself must be reconsidered"]}
+      </script>
+    </div>
+    <div class="slide flow-slide" data-slide="2">
+      <div class="slide-content">
+        <div class="flow-wrap">
+          <div>
+            <h2 class="flow-title reveal">IASI is the boundary</h2>
+            <p class="flow-subtitle reveal">What comes from outside enters as input. Inside IASI it is understood, engineered and materialized. What leaves is output.</p>
+          </div>
+
+          <div class="iasi-flow reveal">
+            <div class="outside interactive" id="externalInputTrigger" role="button" tabindex="0" aria-expanded="false" aria-controls="externalInputDetail"><svg class="cloud-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+  <path fill="#5ee7d0" d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383"/>
+</svg><span>Outside</span></div>
+
+            <div class="flow-arrow" aria-hidden="true">→</div>
+
+            <div class="iasi-boundary">
+              <div class="iasi-boundary-label">IASI</div>
+
+              <div class="iasi-inner">
+                <div class="flow-box interactive-inputs" id="inputsTrigger"
+                     role="button" tabindex="0" aria-expanded="false" aria-controls="inputsDetail">
+                  <strong>Inputs</strong>
+                  <span>What enters the engineering process.</span>
+                </div>
+
+                <div class="flow-arrow" aria-hidden="true">→</div>
+
+                <div class="flow-box engine interactive-engine" id="engineTrigger"
+                     role="button" tabindex="0" aria-expanded="false" aria-controls="engineDetail">
+                  <strong>Engine</strong>
+                  <span>Where understanding, decisions and execution happen.</span>
+                </div>
+
+                <div class="flow-arrow" aria-hidden="true">→</div>
+
+                <div class="flow-box interactive-outputs" id="outputsTrigger"
+                     role="button" tabindex="0" aria-expanded="false" aria-controls="outputsDetail">
+                  <strong>Outputs</strong>
+                  <span>Materialized results produced by tasks.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flow-arrow" aria-hidden="true">→</div>
+
+            <div class="outside interactive delivery-outside" id="deliveryTrigger" role="button" tabindex="0" aria-expanded="false" aria-controls="deliveryDetail"><svg class="cloud-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+  <path fill="#5ee7d0" d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383"/>
+</svg><span>Outside</span></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="flow-note">One entry. One exit. The cycles are internal.</p>
+
+
+      <div class="input-detail-backdrop" id="externalInputDetail" aria-hidden="true">
+        <div class="input-detail" role="dialog" aria-modal="true" aria-labelledby="externalInputTitle">
+          <button class="detail-close" id="externalInputClose" type="button" aria-label="Close">×</button>
+
+          <div class="input-detail-kicker">Outside → Inputs</div>
+          <h3 id="externalInputTitle">External inputs</h3>
+          <p class="input-detail-copy">
+            Anything that reaches IASI from outside the system: documents, messages,
+            images, data or other source material. It enters <strong>as-is</strong>,
+            in its original format, <strong>without normalization</strong>.
+          </p>
+
+          <div class="input-icons" aria-label="Examples of external input formats">
+
+            <!-- Adobe Acrobat / PDF -->
+            <div class="source-icon" title="PDF / Acrobat">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="7" y="4" width="50" height="56" rx="10" fill="#EC1C24"/>
+                <path d="M20 44c7-10 12-23 14-32 1 9 5 18 10 25-8-2-16-1-24 7Zm14-13c-3 0-8 1-12 3 3-5 6-11 8-17 1 5 2 9 4 14Zm4 6c5 1 9 3 12 5-4 1-9 1-14 0 1-2 1-3 2-5Z"
+                      fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <small>PDF</small>
+            </div>
+
+            <!-- Microsoft Word -->
+            <div class="source-icon" title="Microsoft Word">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="16" y="7" width="41" height="50" rx="5" fill="#185ABD"/>
+                <rect x="7" y="15" width="32" height="34" rx="5" fill="#2B579A"/>
+                <path d="M14 23h5l4 16 4-16h5l-6 21h-6z" fill="#fff"/>
+                <path d="M40 18h11M40 26h11M40 34h11M40 42h11" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".78"/>
+              </svg>
+              <small>Word</small>
+            </div>
+
+            <!-- Microsoft PowerPoint -->
+            <div class="source-icon" title="Microsoft PowerPoint">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="16" y="7" width="41" height="50" rx="5" fill="#D24726"/>
+                <rect x="7" y="15" width="32" height="34" rx="5" fill="#B7472A"/>
+                <path d="M15 22h9c6 0 9 3 9 8s-3 8-9 8h-4v7h-5zm5 4v8h4c3 0 4-1 4-4s-1-4-4-4z" fill="#fff"/>
+                <circle cx="45" cy="31" r="9" fill="#fff" opacity=".82"/>
+                <path d="M45 22v9h9" fill="#D24726"/>
+              </svg>
+              <small>PowerPoint</small>
+            </div>
+
+            <!-- Microsoft Excel -->
+            <div class="source-icon" title="Microsoft Excel">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="16" y="7" width="41" height="50" rx="5" fill="#107C41"/>
+                <rect x="7" y="15" width="32" height="34" rx="5" fill="#185C37"/>
+                <path d="M15 23h6l4 7 4-7h6l-7 10 7 11h-6l-4-7-4 7h-6l7-11z" fill="#fff"/>
+                <path d="M41 19h12v8H41zM41 30h12v8H41zM41 41h12v8H41z" fill="#fff" opacity=".78"/>
+              </svg>
+              <small>Excel</small>
+            </div>
+
+            <!-- Email -->
+            <div class="source-icon" title="Email">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="5" y="12" width="54" height="40" rx="8" fill="#5EE7D0"/>
+                <path d="M10 18 32 35 54 18" fill="none" stroke="#07100e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="m9 47 16-15M55 47 39 32" fill="none" stroke="#07100e" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <small>Email</small>
+            </div>
+
+            <!-- Image -->
+            <div class="source-icon" title="Image">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="6" y="7" width="52" height="50" rx="8" fill="#7C3AED"/>
+                <circle cx="22" cy="23" r="6" fill="#FDE68A"/>
+                <path d="M11 50 26 35l9 9 7-7 11 13Z" fill="#fff"/>
+              </svg>
+              <small>Image</small>
+            </div>
+
+            <!-- Plain text / generic file -->
+            <div class="source-icon" title="Text or other files">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M15 5h25l11 11v43H15z" fill="#94A3B8"/>
+                <path d="M40 5v13h13" fill="#CBD5E1"/>
+                <path d="M22 31h22M22 39h22M22 47h15" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <small>Other</small>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="input-detail-backdrop" id="inputsDetail" aria-hidden="true">
+        <div class="input-detail" role="dialog" aria-modal="true" aria-labelledby="inputsDetailTitle">
+          <button class="detail-close" id="inputsClose" type="button" aria-label="Close">×</button>
+
+          <div class="input-detail-kicker">Inside IASI</div>
+          <h3 id="inputsDetailTitle">Inputs</h3>
+          <p class="input-detail-copy">
+            Inputs are organized by <strong>provenance</strong>: where the knowledge comes from
+            and how it enters the engineering process.
+          </p>
+
+          <div class="folders-grid" aria-label="IASI input folders">
+
+            <div class="folder-card external">
+              <svg class="folder-icon" viewBox="0 0 96 72" aria-hidden="true">
+  <path class="folder-tab" d="M8 18a6 6 0 0 1 6-6h24l8 8h36a6 6 0 0 1 6 6v8H8z"/>
+  <path class="folder-body" d="M8 28h80v30a8 8 0 0 1-8 8H16a8 8 0 0 1-8-8z"/>
+</svg>
+              <h4>externals</h4>
+              <p>Material that originates outside IASI and is preserved as received.</p>
+            </div>
+
+            <div class="folder-card internal">
+              <svg class="folder-icon" viewBox="0 0 96 72" aria-hidden="true">
+  <path class="folder-tab" d="M8 18a6 6 0 0 1 6-6h24l8 8h36a6 6 0 0 1 6 6v8H8z"/>
+  <path class="folder-body" d="M8 28h80v30a8 8 0 0 1-8 8H16a8 8 0 0 1-8-8z"/>
+</svg>
+              <h4>internals</h4>
+              <p>Knowledge and decisions created inside the IASI engineering process.</p>
+            </div>
+
+            <div class="folder-card authored">
+              <svg class="folder-icon" viewBox="0 0 96 72" aria-hidden="true">
+  <path class="folder-tab" d="M8 18a6 6 0 0 1 6-6h24l8 8h36a6 6 0 0 1 6 6v8H8z"/>
+  <path class="folder-body" d="M8 28h80v30a8 8 0 0 1-8 8H16a8 8 0 0 1-8-8z"/>
+</svg>
+              <h4>authored</h4>
+              <p>Inputs deliberately written or prepared for the project as explicit source material.</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="input-detail-backdrop" id="engineDetail" aria-hidden="true">
+        <div class="input-detail" role="dialog" aria-modal="true" aria-labelledby="engineDetailTitle">
+          <button class="detail-close" id="engineClose" type="button" aria-label="Close">×</button>
+
+          <div class="input-detail-kicker">Inside IASI</div>
+          <h3 id="engineDetailTitle">Engine</h3>
+          <p class="input-detail-copy">
+            This is where engineering happens. IASI turns knowledge into explicit decisions,
+            actionable work, verified results and an authorized outcome ready to leave the system.
+          </p>
+
+          <div class="engine-steps" aria-label="IASI engine flow">
+
+            <div class="engine-step">
+              <div class="engine-step-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9.5 3a4.5 4.5 0 0 0-3.9 6.75A4.5 4.5 0 0 0 7 18.4V21"/>
+                  <path d="M14.5 3a4.5 4.5 0 0 1 3.9 6.75A4.5 4.5 0 0 1 17 18.4V21"/>
+                  <path d="M9.5 6.5c1.5 0 2.5 1 2.5 2.5v6"/>
+                  <path d="M14.5 6.5c-1.5 0-2.5 1-2.5 2.5"/>
+                </svg>
+              </div>
+              <strong>Understand</strong>
+            </div>
+
+            <div class="engine-arrow">→</div>
+
+            <div class="engine-step">
+              <div class="engine-step-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 20h16"/>
+                  <path d="m6 17 9-9 3 3-9 9H6z"/>
+                  <path d="m14 9 3 3"/>
+                </svg>
+              </div>
+              <strong>Specify</strong>
+            </div>
+
+            <div class="engine-arrow">→</div>
+
+            <div class="engine-step">
+              <div class="engine-step-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 4h12v16H6z"/>
+                  <path d="m9 8 1.5 1.5L13 7"/>
+                  <path d="M9 13h6"/>
+                  <path d="M9 17h6"/>
+                </svg>
+              </div>
+              <strong>Plan</strong>
+            </div>
+
+            <div class="engine-arrow">→</div>
+
+            <div class="engine-step">
+              <div class="engine-step-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v4"/>
+                  <path d="M12 17v4"/>
+                  <path d="m4.2 7.5 3.5 2"/>
+                  <path d="m16.3 14.5 3.5 2"/>
+                  <path d="m4.2 16.5 3.5-2"/>
+                  <path d="m16.3 9.5 3.5-2"/>
+                  <circle cx="12" cy="12" r="4"/>
+                </svg>
+              </div>
+              <strong>Execute</strong>
+            </div>
+
+            <div class="engine-arrow">→</div>
+
+            <div class="engine-step">
+              <div class="engine-step-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="m8 12 2.5 2.5L16 9"/>
+                </svg>
+              </div>
+              <strong>Verify</strong>
+            </div>
+
+            <div class="engine-arrow">→</div>
+
+            <div class="engine-step">
+              <div class="engine-step-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3 5 6v5c0 4.5 2.7 8.2 7 10 4.3-1.8 7-5.5 7-10V6z"/>
+                  <path d="m8.8 12 2.1 2.1 4.3-4.4"/>
+                </svg>
+              </div>
+              <strong>Authorize</strong>
+            </div>
+
+          </div>
+
+          <p class="engine-caption">
+            The engine is a process, not a folder: understand the inputs, specify the result,
+            plan the work, execute it, verify what was produced and authorize the result before it leaves IASI.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="input-detail-backdrop" id="outputsDetail" aria-hidden="true">
+        <div class="input-detail" role="dialog" aria-modal="true" aria-labelledby="outputsDetailTitle">
+          <button class="detail-close" id="outputsClose" type="button" aria-label="Close">×</button>
+
+          <div class="input-detail-kicker">Inside IASI → Outside</div>
+          <h3 id="outputsDetailTitle">Outputs and deliverables</h3>
+          <p class="input-detail-copy">
+            Tasks materialize their results in <strong>outputs</strong>. Those results remain inside IASI
+            until they are verified and authorized. Only an authorized output becomes a
+            <strong>deliverable</strong> that can leave the system.
+          </p>
+
+          <div class="outputs-pipeline" aria-label="From output to deliverable">
+
+            <div class="output-stage output">
+              <div class="output-stage-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 3h9l3 3v15H6z"/>
+                  <path d="M15 3v4h4"/>
+                  <path d="M9 11h6M9 15h6"/>
+                </svg>
+              </div>
+              <strong>Output</strong>
+              <span>Materialized task result</span>
+            </div>
+
+            <div class="output-arrow">→</div>
+
+            <div class="output-stage verify">
+              <div class="output-stage-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="m8 12 2.5 2.5L16 9"/>
+                </svg>
+              </div>
+              <strong>Verify</strong>
+              <span>Check the result</span>
+            </div>
+
+            <div class="output-arrow">→</div>
+
+            <div class="output-stage authorize">
+              <div class="output-stage-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3 5 6v5c0 4.5 2.7 8.2 7 10 4.3-1.8 7-5.5 7-10V6z"/>
+                  <path d="m8.8 12 2.1 2.1 4.3-4.4"/>
+                </svg>
+              </div>
+              <strong>Authorize</strong>
+              <div class="authorization-modes">
+                <span class="authorization-mode">automatic</span>
+                <span class="authorization-mode">human</span>
+              </div>
+            </div>
+
+            <div class="output-arrow">→</div>
+
+            <div class="output-stage deliverable">
+              <div class="output-stage-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7 12 3l8 4-8 4z"/>
+                  <path d="M4 7v10l8 4 8-4V7"/>
+                  <path d="M12 11v10"/>
+                  <path d="m9.5 15 2.5 2.5 4-4"/>
+                </svg>
+              </div>
+              <strong>Deliverable</strong>
+              <span>Authorized to leave IASI</span>
+            </div>
+
+          </div>
+
+          <p class="outputs-rule">
+            <strong>Outputs are produced. Deliverables are authorized.</strong>
+          </p>
+        </div>
+      </div>
+
+
+      <div class="input-detail-backdrop" id="deliveryDetail" aria-hidden="true">
+        <div class="input-detail" role="dialog" aria-modal="true" aria-labelledby="deliveryDetailTitle">
+          <button class="detail-close" id="deliveryClose" type="button" aria-label="Close">×</button>
+
+          <div class="input-detail-kicker">Deliverables → Outside</div>
+          <h3 id="deliveryDetailTitle">Delivery targets</h3>
+          <p class="input-detail-copy">
+            Once an output has been verified and authorized, it becomes a
+            <strong>deliverable</strong> and can leave IASI for its intended destination.
+          </p>
+
+          <div class="delivery-targets" aria-label="Examples of delivery targets">
+
+            <div class="delivery-target">
+              <div class="delivery-target-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M5 21c0-4 3-7 7-7s7 3 7 7"/>
+                </svg>
+              </div>
+              <strong>Human / Client</strong>
+              <span>Review, decision, handoff</span>
+            </div>
+
+            <div class="delivery-target">
+              <div class="delivery-target-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="6" cy="6" r="2"/>
+                  <circle cx="18" cy="6" r="2"/>
+                  <circle cx="12" cy="18" r="2"/>
+                  <path d="M8 6h8M7.5 7.5l3.5 8M16.5 7.5l-3.5 8"/>
+                </svg>
+              </div>
+              <strong>Repository</strong>
+              <span>Source or artifact store</span>
+            </div>
+
+            <div class="delivery-target">
+              <div class="delivery-target-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v12"/>
+                  <path d="m8 11 4 4 4-4"/>
+                  <path d="M5 18h14v3H5z"/>
+                </svg>
+              </div>
+              <strong>Deployment</strong>
+              <span>Runtime or environment</span>
+            </div>
+
+            <div class="delivery-target">
+              <div class="delivery-target-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5h6a3 3 0 0 1 3 3v11H7a3 3 0 0 0-3 3z"/>
+                  <path d="M20 5h-6a3 3 0 0 0-3 3v11h6a3 3 0 0 1 3 3z"/>
+                </svg>
+              </div>
+              <strong>Publication</strong>
+              <span>Book, web, documentation</span>
+            </div>
+
+            <div class="delivery-target">
+              <div class="delivery-target-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="2"/>
+                  <path d="m4 7 8 6 8-6"/>
+                </svg>
+              </div>
+              <strong>Communication</strong>
+              <span>Email, message, notification</span>
+            </div>
+
+            <div class="delivery-target">
+              <div class="delivery-target-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m3 7 9-4 9 4-9 4z"/>
+                  <path d="M3 7v10l9 4 9-4V7"/>
+                  <path d="M12 11v10"/>
+                </svg>
+              </div>
+              <strong>Package</strong>
+              <span>Binary or distributable artifact</span>
+            </div>
+
+          </div>
+
+          <p class="delivery-rule">
+            <strong>Deliverables leave IASI. Outputs do not.</strong>
+          </p>
+        </div>
+      </div>
+
+      <script type="application/json" class="slide-notes">{
+        "title": "IASI boundary",
+        "script": "IASI has a very simple external shape. Something comes from outside, enters as input, is processed inside the engineering system, and leaves as output. Inside the engine, the work is understood, specified, planned, executed, verified and finally authorized before it can leave IASI. Inputs, engine and outputs belong to IASI. The outside world does not.",
+        "notes": [
+          "Outside is deliberately outside the IASI boundary",
+          "Inputs, Engine and Outputs are contained by IASI",
+          "Internal cycles do not change the simple external contract"
+        ]
+      }</script>
+    </div>
+
+  </div>
+
+  <script>
+    /* ===========================================
+       HTMLSlides navigation runtime
+       =========================================== */
+    var slides = document.querySelectorAll('.slide');
+    var current = 0;
+    var total = slides.length;
+
+    function goTo(index) {
+      if (index < 0 || index >= total || index === current) return;
+
+      if (typeof closeExternalInputDetail === 'function') closeExternalInputDetail();
+      if (typeof closeInputsDetail === 'function') closeInputsDetail();
+      if (typeof closeEngineDetail === 'function') closeEngineDetail();
+      if (typeof closeOutputsDetail === 'function') closeOutputsDetail();
+      if (typeof closeDeliveryDetail === 'function') closeDeliveryDetail();
+
+      current = index;
+      slides.forEach(function(slide, i) {
+        slide.classList.toggle('active', i === current);
+        slide.setAttribute('aria-hidden', i === current ? 'false' : 'true');
+      });
+
+      updateUI();
+      showSpeakerNotes(current);
+    }
+
+    function next() {
+      if (current < total - 1) goTo(current + 1);
+    }
+
+    function prev() {
+      if (current > 0) goTo(current - 1);
+    }
+
+    function updateUI() {
+      document.querySelectorAll('.slide-nav-dot').forEach(function(dot, i) {
+        dot.classList.toggle('active', i === current);
+        dot.setAttribute('aria-current', i === current ? 'true' : 'false');
+      });
+    }
+
+    /* === Keyboard === */
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        next();
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prev();
+      }
+      if (e.key === 'Home') {
+        e.preventDefault();
+        goTo(0);
+      }
+      if (e.key === 'End') {
+        e.preventDefault();
+        goTo(total - 1);
+      }
+    });
+
+    /* === Touch === */
+    var touchStart = 0;
+    document.addEventListener('touchstart', function(e) {
+      touchStart = e.touches[0].clientX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+      var diff = touchStart - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? next() : prev();
+      }
+    }, { passive: true });
+
+    /* === Wheel: discrete navigation, never native page scrolling === */
+    var wheelCD = false;
+    document.addEventListener('wheel', function(e) {
+      e.preventDefault();
+      if (wheelCD) return;
+
+      wheelCD = true;
+      setTimeout(function() { wheelCD = false; }, 600);
+
+      if (e.deltaY > 0 || e.deltaX > 0) next();
+      else if (e.deltaY < 0 || e.deltaX < 0) prev();
+    }, { passive: false });
+
+    /* === Navigation dots === */
+    var slideNav = document.getElementById('slideNav');
+    slides.forEach(function(_, i) {
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'slide-nav-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      dot.addEventListener('click', function() { goTo(i); });
+      slideNav.appendChild(dot);
+    });
+
+
+    /* === Explicit START action === */
+    var startButton = document.getElementById('startButton');
+    if (startButton) {
+      startButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        goTo(1);
+      });
+    }
+
+    slides.forEach(function(slide, i) {
+      slide.setAttribute('aria-hidden', i === current ? 'false' : 'true');
+    });
+
+
+    /* === Slide 3: external input detail === */
+    var externalInputTrigger = document.getElementById('externalInputTrigger');
+    var externalInputDetail = document.getElementById('externalInputDetail');
+    var externalInputClose = document.getElementById('externalInputClose');
+
+    function openExternalInputDetail() {
+      if (!externalInputDetail) return;
+      externalInputDetail.classList.add('open');
+      externalInputDetail.setAttribute('aria-hidden', 'false');
+      if (externalInputTrigger) externalInputTrigger.setAttribute('aria-expanded', 'true');
+      if (externalInputClose) externalInputClose.focus();
+    }
+
+    function closeExternalInputDetail() {
+      if (!externalInputDetail) return;
+      externalInputDetail.classList.remove('open');
+      externalInputDetail.setAttribute('aria-hidden', 'true');
+      if (externalInputTrigger) externalInputTrigger.setAttribute('aria-expanded', 'false');
+    }
+
+    if (externalInputTrigger) {
+      externalInputTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openExternalInputDetail();
+      });
+
+      externalInputTrigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openExternalInputDetail();
+        }
+      });
+    }
+
+    if (externalInputClose) {
+      externalInputClose.addEventListener('click', closeExternalInputDetail);
+    }
+
+    if (externalInputDetail) {
+      externalInputDetail.addEventListener('click', function(e) {
+        if (e.target === externalInputDetail) closeExternalInputDetail();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && externalInputDetail && externalInputDetail.classList.contains('open')) {
+        e.preventDefault();
+        closeExternalInputDetail();
+      }
+    });
+
+
+    /* === Slide 3: Inputs detail === */
+    var inputsTrigger = document.getElementById('inputsTrigger');
+    var inputsDetail = document.getElementById('inputsDetail');
+    var inputsClose = document.getElementById('inputsClose');
+
+    function openInputsDetail() {
+      if (!inputsDetail) return;
+      if (typeof closeExternalInputDetail === 'function') closeExternalInputDetail();
+      inputsDetail.classList.add('open');
+      inputsDetail.setAttribute('aria-hidden', 'false');
+      if (inputsTrigger) inputsTrigger.setAttribute('aria-expanded', 'true');
+      if (inputsClose) inputsClose.focus();
+    }
+
+    function closeInputsDetail() {
+      if (!inputsDetail) return;
+      inputsDetail.classList.remove('open');
+      inputsDetail.setAttribute('aria-hidden', 'true');
+      if (inputsTrigger) inputsTrigger.setAttribute('aria-expanded', 'false');
+    }
+
+    if (inputsTrigger) {
+      inputsTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openInputsDetail();
+      });
+
+      inputsTrigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openInputsDetail();
+        }
+      });
+    }
+
+    if (inputsClose) {
+      inputsClose.addEventListener('click', closeInputsDetail);
+    }
+
+    if (inputsDetail) {
+      inputsDetail.addEventListener('click', function(e) {
+        if (e.target === inputsDetail) closeInputsDetail();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && inputsDetail && inputsDetail.classList.contains('open')) {
+        e.preventDefault();
+        closeInputsDetail();
+      }
+    });
+
+
+    /* === Slide 3: Engine detail === */
+    var engineTrigger = document.getElementById('engineTrigger');
+    var engineDetail = document.getElementById('engineDetail');
+    var engineClose = document.getElementById('engineClose');
+
+    function openEngineDetail() {
+      if (!engineDetail) return;
+      if (typeof closeExternalInputDetail === 'function') closeExternalInputDetail();
+      if (typeof closeInputsDetail === 'function') closeInputsDetail();
+      engineDetail.classList.add('open');
+      engineDetail.setAttribute('aria-hidden', 'false');
+      if (engineTrigger) engineTrigger.setAttribute('aria-expanded', 'true');
+      if (engineClose) engineClose.focus();
+    }
+
+    function closeEngineDetail() {
+      if (!engineDetail) return;
+      engineDetail.classList.remove('open');
+      engineDetail.setAttribute('aria-hidden', 'true');
+      if (engineTrigger) engineTrigger.setAttribute('aria-expanded', 'false');
+    }
+
+    if (engineTrigger) {
+      engineTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEngineDetail();
+      });
+
+      engineTrigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openEngineDetail();
+        }
+      });
+    }
+
+    if (engineClose) {
+      engineClose.addEventListener('click', closeEngineDetail);
+    }
+
+    if (engineDetail) {
+      engineDetail.addEventListener('click', function(e) {
+        if (e.target === engineDetail) closeEngineDetail();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && engineDetail && engineDetail.classList.contains('open')) {
+        e.preventDefault();
+        closeEngineDetail();
+      }
+    });
+
+
+    /* === Slide 3: Outputs detail === */
+    var outputsTrigger = document.getElementById('outputsTrigger');
+    var outputsDetail = document.getElementById('outputsDetail');
+    var outputsClose = document.getElementById('outputsClose');
+
+    function openOutputsDetail() {
+      if (!outputsDetail) return;
+      if (typeof closeExternalInputDetail === 'function') closeExternalInputDetail();
+      if (typeof closeInputsDetail === 'function') closeInputsDetail();
+      if (typeof closeEngineDetail === 'function') closeEngineDetail();
+
+      outputsDetail.classList.add('open');
+      outputsDetail.setAttribute('aria-hidden', 'false');
+      if (outputsTrigger) outputsTrigger.setAttribute('aria-expanded', 'true');
+      if (outputsClose) outputsClose.focus();
+    }
+
+    function closeOutputsDetail() {
+      if (!outputsDetail) return;
+      outputsDetail.classList.remove('open');
+      outputsDetail.setAttribute('aria-hidden', 'true');
+      if (outputsTrigger) outputsTrigger.setAttribute('aria-expanded', 'false');
+    }
+
+    if (outputsTrigger) {
+      outputsTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openOutputsDetail();
+      });
+
+      outputsTrigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openOutputsDetail();
+        }
+      });
+    }
+
+    if (outputsClose) {
+      outputsClose.addEventListener('click', closeOutputsDetail);
+    }
+
+    if (outputsDetail) {
+      outputsDetail.addEventListener('click', function(e) {
+        if (e.target === outputsDetail) closeOutputsDetail();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && outputsDetail && outputsDetail.classList.contains('open')) {
+        e.preventDefault();
+        closeOutputsDetail();
+      }
+    });
+
+
+    /* === Slide 3: Delivery targets === */
+    var deliveryTrigger = document.getElementById('deliveryTrigger');
+    var deliveryDetail = document.getElementById('deliveryDetail');
+    var deliveryClose = document.getElementById('deliveryClose');
+
+    function openDeliveryDetail() {
+      if (!deliveryDetail) return;
+      if (typeof closeExternalInputDetail === 'function') closeExternalInputDetail();
+      if (typeof closeInputsDetail === 'function') closeInputsDetail();
+      if (typeof closeEngineDetail === 'function') closeEngineDetail();
+      if (typeof closeOutputsDetail === 'function') closeOutputsDetail();
+
+      deliveryDetail.classList.add('open');
+      deliveryDetail.setAttribute('aria-hidden', 'false');
+      if (deliveryTrigger) deliveryTrigger.setAttribute('aria-expanded', 'true');
+      if (deliveryClose) deliveryClose.focus();
+    }
+
+    function closeDeliveryDetail() {
+      if (!deliveryDetail) return;
+      deliveryDetail.classList.remove('open');
+      deliveryDetail.setAttribute('aria-hidden', 'true');
+      if (deliveryTrigger) deliveryTrigger.setAttribute('aria-expanded', 'false');
+    }
+
+    if (deliveryTrigger) {
+      deliveryTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openDeliveryDetail();
+      });
+
+      deliveryTrigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openDeliveryDetail();
+        }
+      });
+    }
+
+    if (deliveryClose) {
+      deliveryClose.addEventListener('click', closeDeliveryDetail);
+    }
+
+    if (deliveryDetail) {
+      deliveryDetail.addEventListener('click', function(e) {
+        if (e.target === deliveryDetail) closeDeliveryDetail();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && deliveryDetail && deliveryDetail.classList.contains('open')) {
+        e.preventDefault();
+        closeDeliveryDetail();
+      }
+    });
+
+    /* ===========================================
+       Speaker notes
+       =========================================== */
+    function showSpeakerNotes(index) {
+      var slide = slides[index];
+      var notesEl = slide.querySelector('script.slide-notes');
+      console.clear();
+
+      if (!notesEl) return;
+
+      try {
+        var n = JSON.parse(notesEl.textContent);
+        var title = n.title || ('Slide ' + (index + 1));
+
+        console.group('%c📋 Slide ' + (index + 1) + '/' + total + ': ' + title,
+          'font-size:16px;font-weight:bold;color:#58a6ff;');
+
+        if (n.script) {
+          console.log('%c' + n.script,
+            'font-size:14px;color:#e6edf3;line-height:1.6;padding:4px 0;');
+        }
+
+        if (n.notes && n.notes.length) {
+          console.log('%cKey points:',
+            'font-size:11px;color:#6e7681;margin-top:4px;');
+          n.notes.forEach(function(note) {
+            console.log('%c  • ' + note,
+              'font-size:12px;color:#8b949e;');
+          });
+        }
+
+        console.groupEnd();
+      } catch (error) {
+        console.warn('Invalid HTMLSlides speaker notes JSON on slide', index + 1, error);
+      }
+    }
+
+    updateUI();
+    setTimeout(function() { showSpeakerNotes(0); }, 250);
+  </script>
+</body>
+</html>
