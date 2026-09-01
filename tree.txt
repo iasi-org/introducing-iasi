@@ -1,0 +1,46 @@
+Listado de rutas de carpetas
+El número de serie del volumen es 00000080 1ECF:A104
+C:.
++---.codex
+¦   +---skills
+¦       +---html-slides
+¦           +---.claude-plugin
+¦           +---.github
+¦           ¦   +---workflows
+¦           +---assets
+¦           ¦   +---fonts
+¦           ¦   +---themes
+¦           +---docs
+¦           ¦   +---superpowers
+¦           ¦       +---plans
+¦           ¦       +---specs
+¦           +---eval
+¦           ¦   +---assets
+¦           ¦   +---content
+¦           ¦   ¦   +---assets
+¦           ¦   +---metrics
+¦           +---evals
+¦           +---examples
+¦           +---references
+¦           +---scripts
+¦           +---skills
+¦           ¦   +---html-slides
+¦           +---testing
+¦               +---assets
+¦               +---bin
+¦               +---lib
+¦               +---tests
+¦                   +---fixtures
++---.github
+¦   +---workflows
++---A-inputs
+¦   +---externals
+¦   +---internal
+¦   +---internals
++---B-engine
+¦   +---specifications
+¦   +---tasks
+¦       +---done
++---C-outputs
+¦   +---corporate-image
++---D-deliverables
