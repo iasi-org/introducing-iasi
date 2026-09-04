@@ -8,7 +8,7 @@ date: 2026-08-31
 
 ## Contexto
 
-IASI necesita una presentación de introducción que permita explicar de forma clara qué es **Ingeniería Asistida por Sistemas Inteligentes (IASI)**, por qué existe y qué problema intenta resolver.
+IASI necesita una presentación de introducción que permita explicar de forma clara qué es **Ingeniería Aumentada por Sistemas Inteligentes (IASI)**, por qué existe y qué problema intenta resolver.
 
 El ecosistema IASI ya contiene principios, metodología, decisiones de ingeniería, libros, artefactos, herramientas, infraestructura y memoria del proceso. Sin embargo, ese conocimiento está distribuido entre distintos repositorios y documentos y requiere tiempo para ser recorrido y comprendido.
 
